@@ -2,15 +2,17 @@ from __future__ import unicode_literals
 
 from django.db import models
 
-CURRENCIES = {'GBP': 'British Pound Sterling',
-              'USD': 'United States Dollar',
-              'EUR': 'Euro',
-              'DKK': 'Danish Krone',
-              'SEK': 'Swedish Krona'}
+CURRENCIES = [('GBP', 'British Pound Sterling'),
+                ('USD', 'United States Dollar'),
+                ('EUR', 'Euro'),
+                ('DKK', 'Danish Krone'),
+                ('SEK', 'Swedish Krona')]
 
 
 class Sploodl(models.Model):
-    home_currency = models.CharField(max_length=3, choices = CURRENCIES.keys())
+    name = models.CharField(max_length=140)
+    home_currency = models.CharField(max_length=3, choices = CURRENCIES)
+
 
 
 class Participant(models.Model):
@@ -20,7 +22,7 @@ class Participant(models.Model):
 class Transaction(models.Model):
     sploodl = models.ForeignKey(Sploodl, on_delete=models.CASCADE)
     description = models.CharField(max_length=140)
-    currency = models.CharField(max_length=3, choices = CURRENCIES.keys())
-    people_by = models.ManyToManyField(Participant)
-    people_for = models.ManyToManyField(Participant)
+    currency = models.CharField(max_length=3, choices = CURRENCIES)
+    people_by = models.ManyToManyField(Participant, related_name='+')
+    people_for = models.ManyToManyField(Participant, related_name='+')
     value = models.DecimalField(max_digits=12, decimal_places=2)
