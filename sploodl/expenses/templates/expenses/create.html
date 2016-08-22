@@ -1,0 +1,8 @@
+<h1>Manage expenses</h1>
+<h2>Create a Sploodl</h2>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+<form action="{% url 'expenses:createsuccess %}" method="post">
+    {% csrf_token %}
+    Title
+</form>
