@@ -1,0 +1,16 @@
+<h1>{{ sploodl.name }}</h1>
+{% if latest_transaction_list %}
+    <table>
+        {% for transaction in latest_transaction_list %}
+        <tr>
+            <td>{{ transaction.description }}</td>
+            <td>{{ transaction.currency }}</td>
+            <td>{{ transaction.value }}</td>
+            <td>{{ transaction.by }}</td>
+            <td>{{ transaction.for }}</td>
+            <td>{{ date }}</td>
+        </tr>
+    </table>
+{% else %}
+    <p>No transactions in this Sploodl yet.</p>
+{% endif %}
