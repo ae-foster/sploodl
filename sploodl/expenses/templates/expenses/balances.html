@@ -1,0 +1,9 @@
+<h1>{{ sploodl.name }}</h1>
+<table>
+{% for participant in sploodl.participant_set.all %}
+    <tr>
+        <td>{{ participant.name }}</td>
+        <td>{{ participant.balance }}</td>
+    </tr>
+{% endfor %}
+</table>

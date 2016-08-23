@@ -28,6 +28,9 @@ class Participant(models.Model):
     def __str__(self):
         return self.name
 
+    def balance(self):
+        return sum([iou.value for iou in self.iou_set.all()])
+
 class Transaction(models.Model):
     sploodl = models.ForeignKey(Sploodl, on_delete=models.CASCADE)
     dateCreated = models.DateTimeField(default = timezone.now)
@@ -62,21 +65,23 @@ class Transaction(models.Model):
 
         #Currency conversion
         #TODO Update this line
-        self.valueInHomeCurrency = self.value
+        self.valueInHomeCurrency = float(self.value)
 
         # Credit
         by_query_set = self.people_by.get_queryset()
         divisor = len(by_query_set)
         for participant in by_query_set:
-            IOU(sploodl = self.sploodl, participant = participant, transaction = self,
-                value = self.valueInHomeCurrency/divisor).save()
+            i=IOU(sploodl = self.sploodl, participant = participant, transaction = self,
+                value = self.valueInHomeCurrency/divisor)
+            i.save()
 
         # Debit
         for_query_set = self.people_for.get_queryset()
         divisor = len(for_query_set)
         for participant in for_query_set:
-            IOU(sploodl = self.sploodl, participant = participant, transaction = self,
-                value = -1*self.valueInHomeCurrency/divisor).save()
+            i= IOU(sploodl = self.sploodl, participant = participant, transaction = self,
+                value = -1*self.valueInHomeCurrency/divisor)
+            i.save()
 
 
 
@@ -86,9 +91,6 @@ class IOU(models.Model):
     transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE)
     value = models.DecimalField(max_digits=12, decimal_places=2)
 
-
-
-
     def __str__(self):
-        return self.description
+        return self.participant.name + " " + str(self.value)
 

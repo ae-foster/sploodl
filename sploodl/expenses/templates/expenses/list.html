@@ -1,12 +1,32 @@
 <h1>{{ sploodl.name }}</h1>
 {% if latest_transaction_list %}
     <table>
+        <tr>
+            <td>Description</td>
+            <td>Currency</td>
+            <td>Amount</td>
+            <td>By</td>
+            <td>For</td>
+            <td>Date created</td>
+            <td>Date last modified</td>
+        </tr>
         {% for transaction in latest_transaction_list %}
         <tr>
             <td>{{ transaction.description }}</td>
             <td>{{ transaction.currency }}</td>
             <td>{{ transaction.value }}</td>
-            <td>{{ transaction.date }}</td>
+            <td>
+                {% for person in transaction.people_by.get_queryset %}
+                    {{ person.name }}
+                {% endfor %}
+            </td>
+            <td>
+                {% for person in transaction.people_for.get_queryset %}
+                    {{ person.name }}
+                {% endfor %}
+            </td>
+            <td>{{ transaction.dateCreated }}</td>
+            <td>{{ transaction.dateModified }}</td>
         </tr>
         {% endfor %}
     </table>
