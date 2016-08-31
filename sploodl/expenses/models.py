@@ -23,7 +23,7 @@ class Sploodl(models.Model):
 class Participant(models.Model):
     sploodl = models.ForeignKey(Sploodl, on_delete=models.CASCADE)
     name = models.CharField(max_length=70)
-    balance = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+
 
     def __str__(self):
         return self.name
