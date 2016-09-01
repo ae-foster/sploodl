@@ -1,7 +1,7 @@
 <h1>{{ sploodl.name }}</h1>
-<h2>Recent transactions</h2>
+<h2>Transactions | <a href = "{% url 'expenses:balances' sploodl.id %}">Balances</a></h2>
 
-<a href = "{% url 'expenses:balances' sploodl.uuid %}">Balances</a>
+
 
 <table>
     <thead>
