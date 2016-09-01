@@ -1,11 +1,7 @@
 from django import forms
 from expenses.models import *
+from .currency.converter import CURRENCIES
 
-CURRENCIES = [('GBP', 'British Pound Sterling'),
-                ('USD', 'United States Dollar'),
-                ('EUR', 'Euro'),
-                ('DKK', 'Danish Krone'),
-                ('SEK', 'Swedish Krona')]
 
 class SploodlForm(forms.Form):
     name = forms.CharField(label='Title', max_length=140)

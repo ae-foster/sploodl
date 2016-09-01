@@ -1,6 +1,7 @@
 add participants on create by tag-style input
 edit and delete rows in table (jQuery?)
 add participants on the fly
+edit sploodl metadata and participants
 better widget for many-to-many fields
 currency conversion
 hide some columns

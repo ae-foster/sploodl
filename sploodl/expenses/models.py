@@ -1,15 +1,16 @@
 from __future__ import unicode_literals
 import uuid
-
 from django.db import models
 from django.utils import timezone
 from django.db.models.signals import post_save, pre_delete
 
-CURRENCIES = [('GBP', 'British Pound Sterling'),
-                ('USD', 'United States Dollar'),
-                ('EUR', 'Euro'),
-                ('DKK', 'Danish Krone'),
-                ('SEK', 'Swedish Krona')]
+from .currency.converter import convertValue, CURRENCIES
+
+#CURRENCIES = [('GBP', 'British Pound Sterling'),
+#                ('USD', 'United States Dollar'),
+#                ('EUR', 'Euro'),
+#                ('DKK', 'Danish Krone'),
+#                ('SEK', 'Swedish Krona')]
 
 
 class Sploodl(models.Model):
@@ -25,12 +26,12 @@ class Participant(models.Model):
     sploodl = models.ForeignKey(Sploodl, on_delete=models.CASCADE)
     name = models.CharField(max_length=70)
 
-
     def __str__(self):
         return self.name
 
     def balance(self):
         return sum([iou.value for iou in self.iou_set.all()])
+
 
 class Transaction(models.Model):
     sploodl = models.ForeignKey(Sploodl, on_delete=models.CASCADE)
@@ -45,14 +46,15 @@ class Transaction(models.Model):
     def __str__(self):
         return self.description
 
-
-
     def refreshIOUs(self):
         #Delete IOUs
         self.deleteIOUs()
 
         # Create IOUs
         self.createIOUs()
+
+        #Update date modified
+        self.dateModified = timezone.now()
 
 
     def deleteIOUs(self):
@@ -63,8 +65,8 @@ class Transaction(models.Model):
 
     def createIOUs(self):
         #Currency conversion
-        #TODO Update this line
-        self.valueInHomeCurrency = float(self.value)
+        self.valueInHomeCurrency = convertValue(float(self.value),
+                                            self.currency, self.sploodl.home_currency)
 
         # Credit
         by_query_set = self.people_by.get_queryset()
