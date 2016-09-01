@@ -3,6 +3,7 @@ import uuid
 
 from django.db import models
 from django.utils import timezone
+from django.db.models.signals import post_save, pre_delete
 
 CURRENCIES = [('GBP', 'British Pound Sterling'),
                 ('USD', 'United States Dollar'),
@@ -37,32 +38,30 @@ class Transaction(models.Model):
     dateModified = models.DateTimeField(default=timezone.now)
     description = models.CharField(max_length=140)
     currency = models.CharField(max_length=3, choices = CURRENCIES)
-    people_by = models.ManyToManyField(Participant, related_name='+')
-    people_for = models.ManyToManyField(Participant, related_name='+')
+    people_by = models.ManyToManyField(Participant,related_name='+')
+    people_for = models.ManyToManyField(Participant,related_name='+')
     value = models.DecimalField(max_digits=12, decimal_places=2)
 
     def __str__(self):
         return self.description
 
-#    def __init__(self, *args, **kwargs):
-#        super.__init__(*args, **kwargs)
-#
-#
-#        #Create IOUs
-#        self.createIOUs()
+
 
     def refreshIOUs(self):
-
         #Delete IOUs
-        for iou in self.iou_set.all():
-            iou.delete()
+        self.deleteIOUs()
 
         # Create IOUs
         self.createIOUs()
 
 
-    def createIOUs(self):
+    def deleteIOUs(self):
+        #Delete IOUs
+        for iou in self.iou_set.all():
+            iou.delete()
 
+
+    def createIOUs(self):
         #Currency conversion
         #TODO Update this line
         self.valueInHomeCurrency = float(self.value)
@@ -83,6 +82,18 @@ class Transaction(models.Model):
                 value = -1*self.valueInHomeCurrency/divisor)
             i.save()
 
+
+def model_created_or_updated(sender, **kwargs):
+    the_instance = kwargs['instance']
+    the_instance.refreshIOUs()
+
+post_save.connect(model_created_or_updated, sender=Transaction)
+
+def model_deleted(sender, **kwargs):
+    the_instance = kwargs['instance']
+    the_instance.deleteIOUs()
+
+pre_delete.connect(model_deleted, sender=Transaction)
 
 
 class IOU(models.Model):

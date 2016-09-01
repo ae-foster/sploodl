@@ -4,7 +4,7 @@ from django.urls import reverse
 
 
 from .models import *
-from .forms import SploodlForm
+from .forms import *
 
 
 def index(request):
@@ -13,8 +13,23 @@ def index(request):
 def listView(request, uuid):
     sploodl = get_object_or_404(Sploodl, id=uuid)
     latest_transaction_list = sploodl.transaction_set.order_by('-dateCreated')[:20]
-    return render(request, 'expenses/list.html', {'sploodl': sploodl,
-                                                  'latest_transaction_list': latest_transaction_list})
+    if request.method == 'POST':
+        form = TransactionForm(request.POST, sploodl=sploodl, auto_id=False)
+        if form.is_valid():
+            new_transaction = form.save(commit=False)
+            new_transaction.sploodl = sploodl
+            new_transaction.dateCreated = timezone.now()
+            new_transaction.dateModified = timezone.now()
+            new_transaction.save()
+            form.save_m2m()
+            new_transaction.createIOUs()
+
+        return HttpResponseRedirect(reverse('expenses:list', args = (sploodl.id,)))
+    else:
+        add_another = TransactionForm(sploodl=sploodl, auto_id=False)
+        return render(request, 'expenses/list.html', {'sploodl': sploodl,
+                                                      'add_form': add_another,
+                                                      'latest_transaction_list': latest_transaction_list})
 
 def balanceView(request, uuid):
     sploodl = get_object_or_404(Sploodl, id=uuid)
@@ -32,14 +47,15 @@ def createView(request):
             name = form.cleaned_data['name']
             homeCurrency = form.cleaned_data['homeCurrency']
             participants = form.cleaned_data['participants']
+            parti_list = [parti.strip() for parti in participants.split(",")]
 
             newSploodl = Sploodl(name=name, home_currency = homeCurrency)
             newSploodl.save()
 
-            peopleNames = [name.strip() for name in participants.split(',')]
-            for personName in peopleNames:
-                newPerson = Participant(sploodl = newSploodl, name=personName)
-                newPerson.save()
+            for parti in parti_list:
+                new_participant = Participant(name = parti, sploodl = newSploodl)
+                new_participant.save()
+
 
             return HttpResponseRedirect(reverse('expenses:list', args = (newSploodl.id,)))
 
@@ -47,4 +63,5 @@ def createView(request):
     else:
         form = SploodlForm()
 
-    return render(request, 'expenses/create.html', {'form': form})
+
+    return render(request, 'expenses/create.html', {'spl_form': form})

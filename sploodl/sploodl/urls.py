@@ -20,4 +20,5 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^expenses/', include('expenses.urls')),
     url(r'^admin/', admin.site.urls),
+    url(r'^tags_input/', include('tags_input.urls', namespace='tags_input')),
 ]

@@ -1,4 +1,8 @@
 <h1>{{ sploodl.name }}</h1>
+<h2>Balances</h2>
+
+<a href = "{% url 'expenses:list' sploodl.uuid %}">Balances</a>
+
 <table>
 {% for participant in sploodl.participant_set.all %}
     <tr>

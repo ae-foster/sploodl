@@ -1,35 +1,72 @@
 <h1>{{ sploodl.name }}</h1>
-{% if latest_transaction_list %}
-    <table>
-        <tr>
-            <td>Description</td>
-            <td>Currency</td>
-            <td>Amount</td>
-            <td>By</td>
-            <td>For</td>
-            <td>Date created</td>
-            <td>Date last modified</td>
-        </tr>
-        {% for transaction in latest_transaction_list %}
-        <tr>
-            <td>{{ transaction.description }}</td>
-            <td>{{ transaction.currency }}</td>
-            <td>{{ transaction.value }}</td>
-            <td>
-                {% for person in transaction.people_by.get_queryset %}
-                    {{ person.name }}
-                {% endfor %}
-            </td>
-            <td>
-                {% for person in transaction.people_for.get_queryset %}
-                    {{ person.name }}
-                {% endfor %}
-            </td>
-            <td>{{ transaction.dateCreated }}</td>
-            <td>{{ transaction.dateModified }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-{% else %}
-    <p>No transactions in this Sploodl yet.</p>
-{% endif %}
+<h2>Recent transactions</h2>
+
+<a href = "{% url 'expenses:balances' sploodl.uuid %}">Balances</a>
+
+<table>
+    <thead>
+    <tr>
+        <th>Description</th>
+        <th>Currency</th>
+        <th>Amount</th>
+        <th>By</th>
+        <th>For</th>
+        <th>Date created</th>
+        <th>Date last modified</th>
+        <th>&nbsp;</th>
+        <th>&nbsp;</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for transaction in latest_transaction_list %}
+    <tr>
+        <td>{{ transaction.description }}</td>
+        <td>{{ transaction.currency }}</td>
+        <td>{{ transaction.value }}</td>
+        <td>
+            {% for person in transaction.people_by.get_queryset %}
+                {{ person.name }}
+            {% endfor %}
+        </td>
+        <td>
+            {% for person in transaction.people_for.get_queryset %}
+                {{ person.name }}
+            {% endfor %}
+        </td>
+        <td>{{ transaction.dateCreated }}</td>
+        <td>{{ transaction.dateModified }}</td>
+        <td>Edit</td>
+        <td>Delete</td>
+    </tr>
+    {% endfor %}
+    <tr><form action="" method="post">
+    {% csrf_token %}
+    {{ add_form.no_field_errors }}
+        <td>
+            {{ add_form.description.errors }}
+            {{ add_form.description }}
+        </td>
+        <td>
+            {{ add_form.currency.errors }}
+            {{ add_form.currency }}
+        </td>
+        <td>
+            {{ add_form.value.errors }}
+            {{ add_form.value }}
+        </td>
+        <td>
+            {{ add_form.people_by.errors }}
+            {{ add_form.people_by }}
+        </td>
+        <td>
+            {{ add_form.people_for.errors }}
+            {{ add_form.people_for }}
+        </td>
+        <td><input type="submit" value="Save" /></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </form></tr>
+    </tbody>
+</table>
+
