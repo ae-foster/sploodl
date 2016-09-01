@@ -35,6 +35,12 @@ def balanceView(request, uuid):
     sploodl = get_object_or_404(Sploodl, id=uuid)
     return render(request, 'expenses/balances.html', {'sploodl': sploodl})
 
+def delete(request, uuid, id):
+    sploodl = get_object_or_404(Sploodl, id=uuid)
+    get_object_or_404(Transaction, id = id).delete()
+    return HttpResponseRedirect(reverse('expenses:list', args = (sploodl.id,)))
+
+
 
 def createView(request):
     # if this is a POST request we need to process the form data

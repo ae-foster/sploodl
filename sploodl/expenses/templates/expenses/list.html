@@ -36,7 +36,7 @@
         <td>{{ transaction.dateCreated }}</td>
         <td>{{ transaction.dateModified }}</td>
         <td>Edit</td>
-        <td>Delete</td>
+        <td><a href="{% url 'expenses:delete' sploodl.id transaction.id %}">Delete</a></td>
     </tr>
     {% endfor %}
     <tr><form action="" method="post">
