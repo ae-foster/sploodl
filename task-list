@@ -1,10 +1,17 @@
-create new sploodl
-add new transaction
-tab between balances and list views
+add participants on create by tag-style input
+edit and delete rows in table (jQuery?)
+add participants on the fly
+better widget for many-to-many fields
 currency conversion
 hide some columns
 display more rows
+
+
+
+
+
 search for historical transactions
+automated testing
 "who do I pay?"
 
 
